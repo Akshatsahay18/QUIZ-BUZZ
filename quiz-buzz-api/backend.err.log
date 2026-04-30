@@ -1,0 +1,21 @@
+
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+Error [TransformError]: spawn EPERM
+    at ChildProcess.spawn (node:internal/child_process:420:11)
+    at Object.spawn (node:child_process:786:9)
+    at ensureServiceIsRunning (D:\adv projects\Quiz-App\quiz-buzz-api\node_modules\esbuild\lib\main.js:2268:29)
+    at transform (D:\adv projects\Quiz-App\quiz-buzz-api\node_modules\esbuild\lib\main.js:2168:37)
+    at file:///D:/adv%20projects/Quiz-App/quiz-buzz-api/node_modules/tsx/dist/index-7AaEi15b.mjs:14:2865
+    at applyTransformers (file:///D:/adv%20projects/Quiz-App/quiz-buzz-api/node_modules/tsx/dist/index-7AaEi15b.mjs:14:1266)
+    at transform (file:///D:/adv%20projects/Quiz-App/quiz-buzz-api/node_modules/tsx/dist/index-7AaEi15b.mjs:14:2812)
+    at load (file:///D:/adv%20projects/Quiz-App/quiz-buzz-api/node_modules/tsx/dist/esm/index.mjs?1777547272388:2:2348)
+    at async nextLoad (node:internal/modules/esm/hooks:748:22)
+    at async Hooks.load (node:internal/modules/esm/hooks:385:20) {
+  errno: -4048,
+  code: 'EPERM',
+  syscall: 'spawn'
+}
+
+Node.js v22.18.0
