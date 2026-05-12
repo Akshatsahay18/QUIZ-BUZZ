@@ -1,36 +1,92 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# QuizBuzz
 
-## Getting Started
+QuizBuzz is a quiz platform with authenticated quiz creation, quiz play, attempt results, dashboards, and leaderboards.
 
-First, run the development server:
+## Tech Stack
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Next.js 16 with the App Router
+- Clerk authentication
+- Tailwind CSS
+- Sonner toast notifications
+- QuizBuzz API backend in `quiz-buzz-api`
+
+## Prerequisites
+
+- Node.js 22 or newer
+- A running MongoDB instance for the backend
+- Clerk application keys
+
+## Environment Variables
+
+Create or update `quiz-buzz/.env.local`:
+
+```env
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_your_publishable_key
+CLERK_SECRET_KEY=sk_test_your_secret_key
+QUIZ_BUZZ_API_ORIGIN=http://localhost:8040
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create or update `quiz-buzz-api/.env`:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```env
+MONGODB_URI=mongodb+srv://your-mongodb-uri
+PORT=8040
+CLERK_JWKS_URL=https://your-clerk-domain.clerk.accounts.dev/.well-known/jwks.json
+CORS_ORIGIN=http://localhost:3000
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Install
 
-## Learn More
+Install dependencies in both app folders:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+cd quiz-buzz-api
+npm install
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+cd ../quiz-buzz
+npm install
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Run Locally
 
-## Deploy on Vercel
+Start the backend first:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+cd quiz-buzz-api
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Then start the frontend in a separate terminal:
+
+```bash
+cd quiz-buzz
+npm run dev
+```
+
+Open these URLs:
+
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:8040
+- API docs: http://localhost:8040/api/v1/_docs
+
+## Available Pages
+
+- `/` - Home
+- `/quizzes` - Browse quizzes
+- `/quizzes/create` - Create a quiz
+- `/quizzes/[id]` - Play a quiz
+- `/quizzes/[id]/results` - Attempt results
+- `/dashboard` - User dashboard
+- `/leaderboard/[id]` - Quiz leaderboard
+
+## Build
+
+```bash
+npm run build
+```
+
+## Notes
+
+- The frontend uses `QUIZ_BUZZ_API_ORIGIN` for server-side API requests.
+- Toast notifications are powered by Sonner.
+- Loading states and error states are implemented for the main quiz flows.

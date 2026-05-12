@@ -3,10 +3,32 @@
 import { SignInButton, useUser } from "@clerk/nextjs";
 import { ArrowRight, BarChart3, CircleHelp, Timer } from "lucide-react";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import { ApiStatus } from "@/components/ApiStatus";
+import { QuizCard } from "@/components/QuizCard";
+import { QuizCardSkeleton } from "@/components/QuizCardSkeleton";
+import { apiFetch, normalizeList } from "@/lib/api";
+import { type ApiListResponse, type Quiz } from "@/lib/types";
 
 export default function Home() {
   const { isSignedIn } = useUser();
+  const [quizzes, setQuizzes] = useState<Quiz[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuizzes = async () => {
+      try {
+        const payload = await apiFetch<ApiListResponse<Quiz>>("/quizzes?limit=6");
+        setQuizzes(normalizeList(payload).docs);
+      } catch (error) {
+        console.error("Failed to fetch quizzes:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchQuizzes();
+  }, []);
 
   return (
     <div className="flex flex-1 flex-col">
@@ -24,7 +46,7 @@ export default function Home() {
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               {isSignedIn ? (
                 <Link
-                  href="/quizzes/new"
+                  href="/quizzes/create"
                   className="inline-flex h-12 items-center justify-center gap-2 rounded-md bg-slate-950 px-5 text-sm font-semibold text-white transition hover:bg-slate-800"
                 >
                   Create quiz
@@ -112,6 +134,46 @@ export default function Home() {
               ))}
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Featured Quizzes Section */}
+      <section className="bg-white py-14 sm:py-20">
+        <div className="mx-auto w-full max-w-6xl px-4 sm:px-6">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-3xl font-semibold text-slate-950">
+                Featured Quizzes
+              </h2>
+              <p className="mt-2 text-slate-600">
+                Try these popular quizzes and test your knowledge
+              </p>
+            </div>
+            <Link
+              href="/quizzes"
+              className="text-sm font-semibold text-indigo-600 hover:text-indigo-700"
+            >
+              View all →
+            </Link>
+          </div>
+
+          {isLoading ? (
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <QuizCardSkeleton key={i} />
+              ))}
+            </div>
+          ) : quizzes.length > 0 ? (
+            <div className="mt-8 grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {quizzes.map((quiz) => (
+                <QuizCard key={quiz._id} quiz={quiz} />
+              ))}
+            </div>
+          ) : (
+            <div className="mt-8 rounded-lg border border-slate-200 bg-slate-50 p-8 text-center">
+              <p className="text-slate-600">No quizzes available yet</p>
+            </div>
+          )}
         </div>
       </section>
     </div>

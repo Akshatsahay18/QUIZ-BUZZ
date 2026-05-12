@@ -11,6 +11,7 @@ import { useState } from "react";
 
 const navItems = [
   { href: "/quizzes", label: "Quizzes", icon: CircleHelp },
+  { href: "/dashboard", label: "Dashboard", icon: BarChart3 },
   { href: "/leaderboard", label: "Leaderboard", icon: BarChart3 },
 ];
 
@@ -47,13 +48,13 @@ export function Navbar() {
         <div className="hidden items-center gap-2 md:flex">
           {isSignedIn ? (
             <>
-            <Link
-              href="/quizzes/new"
-              className="inline-flex h-10 items-center gap-2 rounded-md bg-slate-950 px-3 text-sm font-semibold text-white transition hover:bg-slate-800"
-            >
-              <Plus className="size-4" aria-hidden="true" />
-              New quiz
-            </Link>
+              <Link
+                href="/quizzes/create"
+                className="inline-flex h-10 items-center gap-2 rounded-md bg-slate-950 px-3 text-sm font-semibold text-white transition hover:bg-slate-800"
+              >
+                <Plus className="size-4" aria-hidden="true" />
+                New quiz
+              </Link>
               <UserButton />
             </>
           ) : (
@@ -76,44 +77,70 @@ export function Navbar() {
         </button>
       </div>
 
-      {isOpen ? (
-        <div className="border-t border-slate-200 bg-white px-4 py-3 md:hidden">
-          <nav className="flex flex-col gap-1" aria-label="Mobile">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
-                onClick={() => setIsOpen(false)}
-              >
-                <item.icon className="size-4" aria-hidden="true" />
-                {item.label}
-              </Link>
-            ))}
-          </nav>
-          <div className="mt-3 border-t border-slate-200 pt-3">
-            {isSignedIn ? (
-              <div className="flex items-center justify-between gap-3">
+      <div
+        className={`fixed inset-0 z-50 md:hidden ${isOpen ? "pointer-events-auto" : "pointer-events-none"}`}
+        aria-hidden={!isOpen}
+      >
+        <button
+          type="button"
+          className={`absolute inset-0 bg-slate-950/40 transition-opacity duration-300 ${isOpen ? "opacity-100" : "opacity-0"}`}
+          onClick={() => setIsOpen(false)}
+          aria-label="Close navigation drawer"
+        />
+
+        <aside
+          className={`absolute right-0 top-0 h-full w-[86vw] max-w-sm border-l border-slate-200 bg-white shadow-2xl transition-transform duration-300 ease-out ${isOpen ? "translate-x-0" : "translate-x-full"}`}
+        >
+          <div className="flex items-center justify-between border-b border-slate-200 px-4 py-4">
+            <span className="text-sm font-semibold uppercase tracking-wide text-slate-500">Menu</span>
+            <button
+              type="button"
+              className="rounded-md border border-slate-200 px-3 py-1 text-sm font-medium text-slate-700"
+              onClick={() => setIsOpen(false)}
+            >
+              Close
+            </button>
+          </div>
+
+          <div className="flex h-[calc(100%-4rem)] flex-col justify-between p-4">
+            <nav className="flex flex-col gap-1" aria-label="Mobile">
+              {navItems.map((item) => (
                 <Link
-                  href="/quizzes/new"
-                  className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md bg-slate-950 px-3 text-sm font-semibold text-white"
+                  key={item.href}
+                  href={item.href}
+                  className="inline-flex h-11 items-center gap-2 rounded-md px-3 text-sm font-medium text-slate-700 hover:bg-slate-100"
                   onClick={() => setIsOpen(false)}
                 >
-                  <Plus className="size-4" aria-hidden="true" />
-                  New quiz
+                  <item.icon className="size-4" aria-hidden="true" />
+                  {item.label}
                 </Link>
-                <UserButton />
-              </div>
-            ) : (
-              <SignInButton mode="modal">
-                <button className="inline-flex h-10 w-full items-center justify-center rounded-md bg-slate-950 px-4 text-sm font-semibold text-white">
-                  Sign in
-                </button>
-              </SignInButton>
-            )}
+              ))}
+            </nav>
+
+            <div className="border-t border-slate-200 pt-4">
+              {isSignedIn ? (
+                <div className="flex items-center justify-between gap-3">
+                  <Link
+                    href="/quizzes/create"
+                    className="inline-flex h-10 flex-1 items-center justify-center gap-2 rounded-md bg-slate-950 px-3 text-sm font-semibold text-white"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    <Plus className="size-4" aria-hidden="true" />
+                    New quiz
+                  </Link>
+                  <UserButton />
+                </div>
+              ) : (
+                <SignInButton mode="modal">
+                  <button className="inline-flex h-10 w-full items-center justify-center rounded-md bg-slate-950 px-4 text-sm font-semibold text-white">
+                    Sign in
+                  </button>
+                </SignInButton>
+              )}
+            </div>
           </div>
-        </div>
-      ) : null}
+        </aside>
+      </div>
     </header>
   );
 }
