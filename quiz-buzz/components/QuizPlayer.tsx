@@ -129,6 +129,30 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
         />
       </div>
 
+      {/* Dots overview */}
+      <div className="mb-6 flex items-center justify-center gap-2">
+        {quiz.questions.map((_, idx) => {
+          const visited = selectedAnswers[idx] !== null;
+          const isCurrent = idx === currentQuestionIndex;
+          return (
+            <button
+              key={idx}
+              onClick={() => {
+                if (visited || isCurrent) setCurrentQuestionIndex(idx);
+              }}
+              aria-label={`Question ${idx + 1}`}
+              className={`h-3 w-3 rounded-full transition-all focus:outline-none focus:ring-2 focus:ring-indigo-300 ${
+                isCurrent
+                  ? "bg-indigo-600 scale-110"
+                  : visited
+                  ? "bg-indigo-400"
+                  : "bg-slate-200"
+              }`}
+            />
+          );
+        })}
+      </div>
+
       {/* Question */}
       <div className="mb-8 rounded-lg border border-slate-200 bg-white p-6">
         <h2 className="text-xl font-semibold text-slate-950">

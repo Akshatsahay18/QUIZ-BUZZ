@@ -1,0 +1,18 @@
+{"level":20,"time":1778496493079,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Helmet (security headers) enabled"}
+{"level":20,"time":1778496493089,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"CORS enabled"}
+{"level":40,"time":1778496493089,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Rate limiting disabled"}
+{"level":20,"time":1778496493127,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Sensible (HTTP helpers) enabled"}
+{"level":40,"time":1778496493128,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Optional plugin 'multipart' skipped (@fastify/multipart not installed)"}
+{"level":40,"time":1778496493129,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Optional plugin 'rawBody' skipped (fastify-raw-body not installed)"}
+{"level":20,"time":1778496493144,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Arc core plugin enabled (instance-scoped hooks & registry)"}
+{"level":40,"time":1778496493153,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"[Arc Events] Using in-memory transport. Events will not persist or scale across instances. For production, configure a durable transport (Redis, RabbitMQ, etc.)"}
+{"level":20,"time":1778496493153,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Arc events plugin enabled (transport: memory)"}
+{"level":20,"time":1778496493153,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Request ID plugin registered"}
+{"level":20,"time":1778496493155,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Health plugin registered at /_health"}
+{"level":20,"time":1778496493155,"pid":24208,"hostname":"LAPTOP-DOM946IL","signals":["SIGTERM","SIGINT"],"msg":"Graceful shutdown plugin registered"}
+{"level":20,"time":1778496493156,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Custom authenticator enabled"}
+{"level":20,"time":1778496493157,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Arc error handler enabled"}
+{"level":20,"time":1778496493157,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"OpenAPI spec available at /api/v1/_docs/openapi.json"}
+{"level":20,"time":1778496493158,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"Custom plugins registered"}
+{"level":30,"time":1778496493164,"pid":24208,"hostname":"LAPTOP-DOM946IL","msg":"2 resource(s) registered (prefix: /api/v1): attempt, quiz"}
+{"level":30,"time":1778496493164,"pid":24208,"hostname":"LAPTOP-DOM946IL","preset":"development","runtime":"memory","auth":"authenticator","helmet":true,"cors":true,"rateLimit":false,"msg":"Arc application created"}

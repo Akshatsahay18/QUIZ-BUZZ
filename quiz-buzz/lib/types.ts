@@ -22,6 +22,7 @@ export interface Quiz {
   createdBy: string;
   timer: number;
   questions: Question[];
+  questionCount?: number;
   createdAt: string;
   updatedAt: string;
 }
@@ -58,8 +59,10 @@ export interface Attempt {
   _id: string;
   userId: string;
   quizId: string;
-  answers: number[];
+  answers: (number | null)[];
   score: number;
+  total?: number;
+  correctAnswers?: number[];
   completedAt: string;
 }
 

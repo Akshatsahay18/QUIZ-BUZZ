@@ -1,10 +1,10 @@
 "use client";
 
 import { useAuth } from "@clerk/nextjs";
-import { ArrowLeft, ArrowRight, Loader2, Plus, Trash2 } from "lucide-react";
+import { ArrowLeft, ArrowRight, Loader2, Plus, Trash2, ArrowUp, ArrowDown, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { toast } from "sonner";
 import { apiFetch } from "@/lib/api";
 import { type QuizCreatePayload, type QuizQuestion, type ApiSingleResponse } from "@/lib/types";
@@ -76,6 +76,37 @@ export default function CreateQuizPage() {
 
   const addQuestion = () => {
     setQuestions((currentQuestions) => [...currentQuestions, createQuestion()]);
+  };
+
+  const moveQuestion = (index: number, direction: -1 | 1) => {
+    setQuestions((currentQuestions) => {
+      const next = [...currentQuestions];
+      const newIndex = index + direction;
+      if (newIndex < 0 || newIndex >= next.length) return next;
+      const [item] = next.splice(index, 1);
+      next.splice(newIndex, 0, item);
+      return next;
+    });
+  };
+
+  const [collapsed, setCollapsed] = useState<boolean[]>(() => questions.map(() => false));
+
+  useEffect(() => {
+    setCollapsed((current) => {
+      const next = [...current];
+      // expand or trim to match questions length
+      while (next.length < questions.length) next.push(false);
+      if (next.length > questions.length) next.length = questions.length;
+      return next;
+    });
+  }, [questions.length]);
+
+  const toggleCollapsed = (index: number) => {
+    setCollapsed((c) => {
+      const n = [...c];
+      n[index] = !n[index];
+      return n;
+    });
   };
 
   const removeQuestion = (index: number) => {
@@ -231,6 +262,9 @@ export default function CreateQuizPage() {
               <div>
                 <h2 className="text-xl font-semibold text-slate-950">Questions</h2>
                 <p className="mt-1 text-sm text-slate-600">Add at least one question with four options.</p>
+                <div className="mt-2">
+                  <span className="inline-flex items-center gap-2 rounded-full bg-slate-100 px-3 py-1 text-sm font-medium text-slate-700">{questions.length} question{questions.length === 1 ? "" : "s"} added</span>
+                </div>
               </div>
               <button type="button" onClick={addQuestion} className="inline-flex items-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
                 <Plus className="size-4" aria-hidden="true" />
@@ -238,49 +272,8 @@ export default function CreateQuizPage() {
               </button>
             </div>
 
-            <div className="mt-6 space-y-6">
-              {questions.map((question, questionIndex) => (
-                <div key={questionIndex} className="rounded-xl border border-slate-200 bg-slate-50 p-5">
-                  <div className="flex items-center justify-between gap-4">
-                    <h3 className="font-semibold text-slate-950">Question {questionIndex + 1}</h3>
-                    {questions.length > 1 ? (
-                      <button type="button" onClick={() => removeQuestion(questionIndex)} className="inline-flex items-center gap-2 rounded-md border border-rose-200 bg-white px-3 py-2 text-sm font-semibold text-rose-600 transition hover:bg-rose-50">
-                        <Trash2 className="size-4" aria-hidden="true" />
-                        Remove
-                      </button>
-                    ) : null}
-                  </div>
-
-                  <div className="mt-4 grid gap-4">
-                    <label className="grid gap-2">
-                      <span className="text-sm font-medium text-slate-700">Question text</span>
-                      <input value={question.question} onChange={(event) => updateQuestion(questionIndex, "question", event.target.value)} className={`h-11 rounded-md border px-3 outline-none focus:border-indigo-400 ${error && question.question.trim().length === 0 ? "border-rose-400" : "border-slate-300"}`} />
-                      {error && question.question.trim().length === 0 ? <span className="text-xs text-rose-600">Question text is required.</span> : null}
-                    </label>
-
-                    <div className="grid gap-4 md:grid-cols-2">
-                      {question.options.map((option, optionIndex) => (
-                        <label key={optionIndex} className="grid gap-2">
-                          <span className="text-sm font-medium text-slate-700">Option {optionIndex + 1}</span>
-                          <input value={option} onChange={(event) => updateOption(questionIndex, optionIndex, event.target.value)} className={`h-11 rounded-md border px-3 outline-none focus:border-indigo-400 ${error && option.trim().length === 0 ? "border-rose-400" : "border-slate-300"}`} />
-                          {error && option.trim().length === 0 ? <span className="text-xs text-rose-600">Option is required.</span> : null}
-                        </label>
-                      ))}
-                    </div>
-
-                    <label className="grid gap-2 max-w-sm">
-                      <span className="text-sm font-medium text-slate-700">Correct answer</span>
-                      <select value={question.correctAnswer} onChange={(event) => updateQuestion(questionIndex, "correctAnswer", Number(event.target.value))} className="h-11 rounded-md border border-slate-300 px-3 outline-none focus:border-indigo-400">
-                        {question.options.map((option, optionIndex) => (
-                          <option key={optionIndex} value={optionIndex}>
-                            Option {optionIndex + 1}{option ? ` - ${option}` : ""}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  </div>
-                </div>
-              ))}
+            <div className="mt-6">
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-5">Questions editor placeholder</div>
             </div>
           </div>
         ) : null}

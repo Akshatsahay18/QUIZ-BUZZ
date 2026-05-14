@@ -85,6 +85,11 @@ export default defineResource<Quiz>({
         systemManaged: true,
         description: "Clerk user ID of the quiz creator."
       },
+      questionCount: {
+        type: "number",
+        systemManaged: true,
+        description: "Number of questions in the quiz (virtual field)."
+      },
       "questions.correctAnswer": {
         type: "number",
         hidden: true,

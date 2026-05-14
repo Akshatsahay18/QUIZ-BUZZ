@@ -141,7 +141,7 @@ export default async function ResultsPage({
               const hasCorrectAnswer = typeof question.correctAnswer === "number";
               const isCorrect = hasCorrectAnswer ? userAnswer === question.correctAnswer : false;
               const userAnswerLabel =
-                userAnswer >= 0 ? question.options[userAnswer] : "Not answered";
+                userAnswer !== null && userAnswer >= 0 ? question.options[userAnswer] : "Not answered";
               const correctAnswerLabel = hasCorrectAnswer
                 ? question.options[question.correctAnswer as number]
                 : "Hidden from this response";

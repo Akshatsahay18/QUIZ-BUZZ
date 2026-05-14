@@ -26,7 +26,7 @@ export function QuizCard({ quiz }: QuizCardProps) {
       <div className="flex items-center gap-4 text-xs text-slate-500">
         <div className="flex items-center gap-1">
           <BookOpen className="size-4" aria-hidden="true" />
-          <span>{quiz.questions.length} questions</span>
+          <span>{(quiz.questionCount ?? quiz.questions.length) || 0} {((quiz.questionCount ?? quiz.questions.length) || 0) === 1 ? "Question" : "Questions"}</span>
         </div>
         {quiz.timer > 0 && (
           <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700">

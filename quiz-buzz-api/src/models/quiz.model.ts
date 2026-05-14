@@ -60,6 +60,15 @@ const quizSchema = new Schema(
   { timestamps: true }
 );
 
+// Virtual field for question count
+quizSchema.virtual("questionCount").get(function (this: any) {
+  return Array.isArray(this.questions) ? this.questions.length : 0;
+});
+
+// Ensure virtuals are included when converting to JSON/objects
+quizSchema.set("toJSON", { virtuals: true });
+quizSchema.set("toObject", { virtuals: true });
+
 export type Quiz = InferSchemaType<typeof quizSchema>;
 
 const QuizModel: Model<Quiz> =
