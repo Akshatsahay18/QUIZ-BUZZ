@@ -5,12 +5,14 @@ export interface Option {
 
 export interface Question {
   question: string;
+  image?: string;
   options: string[];
   correctAnswer?: number;
 }
 
 export interface QuizQuestion {
   question: string;
+  image?: string;
   options: string[];
   correctAnswer: number;
 }

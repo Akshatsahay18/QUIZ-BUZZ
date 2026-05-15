@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
+import { formatCountdown } from "@/lib/time";
 
 interface TimerProps {
   initialSeconds: number;
@@ -31,14 +32,10 @@ export function Timer({ initialSeconds, onExpire }: TimerProps) {
     return () => clearInterval(interval);
   }, [timeLeft, onExpire]);
 
-  const minutes = Math.floor(timeLeft / 60);
-  const seconds = timeLeft % 60;
-  const formattedTime = `${minutes.toString().padStart(2, "0")}:${seconds
-    .toString()
-    .padStart(2, "0")}`;
+  const formattedTime = formatCountdown(timeLeft);
 
-  const isWarning = timeLeft <= 30;
-  const isCritical = timeLeft <= 10;
+  const isWarning = timeLeft <= 60;
+  const isCritical = timeLeft <= 30;
 
   return (
     <div

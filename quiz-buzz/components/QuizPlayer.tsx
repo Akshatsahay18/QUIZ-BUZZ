@@ -1,4 +1,5 @@
 "use client";
+/* eslint-disable @next/next/no-img-element */
 
 import { SignInButton, useAuth } from "@clerk/nextjs";
 import { Loader2 } from "lucide-react";
@@ -158,6 +159,16 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
         <h2 className="text-xl font-semibold text-slate-950">
           {currentQuestion.question}
         </h2>
+
+        {currentQuestion.image ? (
+          <div className="mt-5 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50">
+            <img
+              src={currentQuestion.image}
+              alt={`Illustration for question ${currentQuestionIndex + 1}`}
+              className="max-h-80 w-full object-cover"
+            />
+          </div>
+        ) : null}
 
         {/* Options */}
         <div className="mt-6 space-y-3">

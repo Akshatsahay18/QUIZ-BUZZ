@@ -16,8 +16,32 @@ type ResourceHookContext = {
 
 type QuestionInput = {
   question?: unknown;
+  image?: unknown;
   options?: unknown;
   correctAnswer?: unknown;
+};
+
+const assertValidTimer = (timer: unknown) => {
+  if (typeof timer !== "number" || !Number.isInteger(timer)) {
+    throw new Error("timer must be a whole number of seconds.");
+  }
+
+  if (timer < 60) {
+    throw new Error("timer must be at least 60 seconds.");
+  }
+
+  if (timer > 10800) {
+    throw new Error("timer cannot exceed 10800 seconds.");
+  }
+};
+
+const isValidUrl = (value: string) => {
+  try {
+    new URL(value);
+    return true;
+  } catch {
+    return false;
+  }
 };
 
 const assertValidQuestions = (questions: unknown) => {
@@ -31,11 +55,22 @@ const assertValidQuestions = (questions: unknown) => {
     }
 
     if (
+      typeof question.image !== "undefined" &&
+      (typeof question.image !== "string" ||
+        question.image.trim() === "" ||
+        !isValidUrl(question.image))
+    ) {
+      throw new Error(`Question ${index + 1} must include a valid image URL when provided.`);
+    }
+
+    if (
       !Array.isArray(question.options) ||
       question.options.length !== 4 ||
-      question.options.some((option) => typeof option !== "string")
+      question.options.some(
+        (option) => typeof option !== "string" || option.trim() === ""
+      )
     ) {
-      throw new Error(`Question ${index + 1} must include exactly 4 options.`);
+      throw new Error(`Question ${index + 1} must include exactly 4 non-empty options.`);
     }
 
     if (
@@ -50,11 +85,16 @@ const assertValidQuestions = (questions: unknown) => {
 };
 
 const validateQuizCreate = (ctx: ResourceHookContext) => {
+  assertValidTimer(ctx.data.timer);
   assertValidQuestions(ctx.data.questions);
   return ctx.data;
 };
 
 const validateQuizUpdate = (ctx: ResourceHookContext) => {
+  if ("timer" in ctx.data) {
+    assertValidTimer(ctx.data.timer);
+  }
+
   if ("questions" in ctx.data) {
     assertValidQuestions(ctx.data.questions);
   }
@@ -89,6 +129,11 @@ export default defineResource<Quiz>({
         type: "number",
         systemManaged: true,
         description: "Number of questions in the quiz (virtual field)."
+      },
+      "questions.image": {
+        type: "string",
+        nullable: true,
+        description: "Optional ImageKit URL for the question prompt."
       },
       "questions.correctAnswer": {
         type: "number",

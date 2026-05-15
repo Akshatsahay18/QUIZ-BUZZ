@@ -95,7 +95,7 @@ export default function Home() {
                   <p className="text-xs text-slate-500">Players</p>
                 </div>
                 <div className="rounded-md bg-white p-3 shadow-sm">
-                  <p className="text-2xl font-semibold text-amber-700">30s</p>
+                  <p className="text-2xl font-semibold text-amber-700">30m</p>
                   <p className="text-xs text-slate-500">Timer</p>
                 </div>
               </div>

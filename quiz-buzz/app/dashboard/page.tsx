@@ -3,6 +3,7 @@ import { ArrowRight, BarChart3, Clock3, ListChecks, Plus, Target } from "lucide-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { apiFetch, normalizeList, normalizeSingle } from "@/lib/api";
+import { secondsToMinutes } from "@/lib/time";
 import { type ApiListResponse, type ApiSingleResponse, type Attempt, type Quiz } from "@/lib/types";
 
 export const metadata = {
@@ -157,8 +158,12 @@ export default async function DashboardPage() {
                         <div className="font-medium text-slate-950">{quiz.title}</div>
                         <div className="mt-1 line-clamp-1 text-slate-500">{quiz.description || "No description"}</div>
                       </td>
-                      <td className="px-4 py-4">{quiz.questions.length}</td>
-                      <td className="px-4 py-4">{quiz.timer > 0 ? `${quiz.timer}s` : "No timer"}</td>
+                      <td className="px-4 py-4">{quiz.questionCount ?? quiz.questions.length}</td>
+                      <td className="px-4 py-4">
+                        {quiz.timer > 0
+                          ? `${secondsToMinutes(quiz.timer)} ${secondsToMinutes(quiz.timer) === 1 ? "minute" : "minutes"}`
+                          : "No timer"}
+                      </td>
                       <td className="px-4 py-4">
                         <Link href={`/quizzes/${quiz._id}`} className="inline-flex items-center gap-2 rounded-md bg-slate-950 px-3 py-2 text-xs font-semibold text-white transition hover:bg-slate-800">
                           Open

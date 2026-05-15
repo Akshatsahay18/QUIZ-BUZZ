@@ -7,11 +7,16 @@ const questionSchema = new Schema(
       required: true,
       trim: true
     },
+    image: {
+      type: String,
+      trim: true
+    },
     options: {
       type: [String],
       required: true,
       validate: {
-        validator: (options: string[]) => options.length === 4,
+        validator: (options: string[]) =>
+          options.length === 4 && options.every((option) => option.trim() !== ""),
         message: "A question must include exactly 4 options."
       }
     },
@@ -45,8 +50,9 @@ const quizSchema = new Schema(
     },
     timer: {
       type: Number,
-      default: 0,
-      min: 0
+      default: 600,
+      min: 60,
+      max: 10800
     },
     questions: {
       type: [questionSchema],

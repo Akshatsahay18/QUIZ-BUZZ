@@ -38,7 +38,7 @@ export default async function LeaderboardIndexPage() {
               <div key={quiz._id} className="flex flex-col rounded-2xl border border-slate-200 bg-slate-50 p-5">
                 <h2 className="text-lg font-semibold text-slate-950">{quiz.title}</h2>
                 <p className="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{quiz.description || "No description provided."}</p>
-                <div className="mt-4 text-sm text-slate-500">{quiz.questions.length} questions</div>
+                <div className="mt-4 text-sm text-slate-500">{quiz.questionCount ?? quiz.questions.length} questions</div>
                 <Link href={`/leaderboard/${quiz._id}`} className="mt-5 inline-flex items-center justify-center gap-2 rounded-md bg-slate-950 px-4 py-2 text-sm font-semibold text-white transition hover:bg-slate-800">
                   View leaderboard
                   <ArrowRight className="size-4" aria-hidden="true" />

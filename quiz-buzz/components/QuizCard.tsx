@@ -2,6 +2,7 @@
 
 import { ArrowRight, BookOpen, Timer } from "lucide-react";
 import Link from "next/link";
+import { secondsToMinutes } from "@/lib/time";
 import { Quiz } from "@/lib/types";
 
 interface QuizCardProps {
@@ -31,7 +32,10 @@ export function QuizCard({ quiz }: QuizCardProps) {
         {quiz.timer > 0 && (
           <div className="flex items-center gap-1 rounded-full bg-amber-50 px-2 py-1 text-amber-700">
             <Timer className="size-3" aria-hidden="true" />
-            <span>{quiz.timer}s timer</span>
+            <span>
+              {secondsToMinutes(quiz.timer)}{" "}
+              {secondsToMinutes(quiz.timer) === 1 ? "min" : "mins"} timer
+            </span>
           </div>
         )}
       </div>
