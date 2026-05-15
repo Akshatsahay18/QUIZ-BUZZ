@@ -1,5 +1,5 @@
 import { auth } from "@clerk/nextjs/server";
-import { CheckCircle, XCircle, Trophy, Home, EyeOff } from "lucide-react";
+import { CheckCircle, XCircle, Trophy, Home } from "lucide-react";
 import Link from "next/link";
 import { apiFetch, normalizeSingle } from "@/lib/api";
 import { type ApiSingleResponse, type Attempt, type Quiz } from "@/lib/types";
@@ -138,13 +138,19 @@ export default async function ResultsPage({
           <div className="mt-4 space-y-4">
             {quiz.questions.map((question, index) => {
               const userAnswer = attempt.answers[index];
-              const hasCorrectAnswer = typeof question.correctAnswer === "number";
-              const isCorrect = hasCorrectAnswer ? userAnswer === question.correctAnswer : false;
+              const correctAnswerIndexes = attempt.correctAnswers?.[index] ?? [];
+              const userAnswerIndexes = Array.isArray(userAnswer) ? userAnswer : [];
+              const isCorrect =
+                userAnswerIndexes.length === correctAnswerIndexes.length &&
+                [...userAnswerIndexes].sort((a, b) => a - b).every((value, answerIndex) => value === [...correctAnswerIndexes].sort((a, b) => a - b)[answerIndex]);
               const userAnswerLabel =
-                userAnswer !== null && userAnswer >= 0 ? question.options[userAnswer] : "Not answered";
-              const correctAnswerLabel = hasCorrectAnswer
-                ? question.options[question.correctAnswer as number]
-                : "Hidden from this response";
+                userAnswerIndexes.length > 0
+                  ? userAnswerIndexes.map((answerIndex) => question.options[answerIndex]).join(", ")
+                  : "Not answered";
+              const correctAnswerLabel =
+                correctAnswerIndexes.length > 0
+                  ? correctAnswerIndexes.map((answerIndex) => question.options[answerIndex]).join(", ")
+                  : "Not available";
 
               return (
                 <div
@@ -168,19 +174,13 @@ export default async function ResultsPage({
                       <p className={`mt-2 text-sm ${
                         isCorrect ? "text-emerald-700" : "text-red-700"
                       }`}>
-                        Your answer: {userAnswerLabel}
+                        Your answers: {userAnswerLabel}
                       </p>
-                      {!isCorrect && hasCorrectAnswer && (
+                      {!isCorrect && (
                         <p className="mt-1 text-sm text-emerald-700">
-                          Correct answer: {correctAnswerLabel}
+                          Correct answers: {correctAnswerLabel}
                         </p>
                       )}
-                      {!hasCorrectAnswer ? (
-                        <p className="mt-1 inline-flex items-center gap-2 text-sm text-slate-500">
-                          <EyeOff className="size-4" aria-hidden="true" />
-                          Correct answer hidden in this response.
-                        </p>
-                      ) : null}
                     </div>
                   </div>
                 </div>

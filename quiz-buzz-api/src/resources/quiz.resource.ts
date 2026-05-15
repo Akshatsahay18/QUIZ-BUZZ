@@ -18,7 +18,7 @@ type QuestionInput = {
   question?: unknown;
   image?: unknown;
   options?: unknown;
-  correctAnswer?: unknown;
+  correctAnswers?: unknown;
 };
 
 const assertValidTimer = (timer: unknown) => {
@@ -74,12 +74,21 @@ const assertValidQuestions = (questions: unknown) => {
     }
 
     if (
-      typeof question.correctAnswer !== "number" ||
-      !Number.isInteger(question.correctAnswer) ||
-      question.correctAnswer < 0 ||
-      question.correctAnswer > 3
+      !Array.isArray(question.correctAnswers) ||
+      question.correctAnswers.length < 1 ||
+      question.correctAnswers.length > 4 ||
+      new Set(question.correctAnswers).size !== question.correctAnswers.length ||
+      question.correctAnswers.some(
+        (answer) =>
+          typeof answer !== "number" ||
+          !Number.isInteger(answer) ||
+          answer < 0 ||
+          answer > 3
+      )
     ) {
-      throw new Error(`Question ${index + 1} must include a correctAnswer from 0 to 3.`);
+      throw new Error(
+        `Question ${index + 1} must include 1 to 4 unique correctAnswers from 0 to 3.`
+      );
     }
   });
 };
@@ -135,12 +144,12 @@ export default defineResource<Quiz>({
         nullable: true,
         description: "Optional ImageKit URL for the question prompt."
       },
-      "questions.correctAnswer": {
-        type: "number",
+      "questions.correctAnswers": {
+        type: "array",
         hidden: true,
-        min: 0,
-        max: 3,
-        description: "Index of the correct answer. Hidden from normal quiz reads."
+        items: { type: "number" },
+        description:
+          "Indexes of the correct answers. Hidden from normal quiz reads."
       }
     },
     filterableFields: ["createdBy", "title"],

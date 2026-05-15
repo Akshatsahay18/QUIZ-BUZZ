@@ -17,7 +17,7 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
   const router = useRouter();
   const { isSignedIn, getToken } = useAuth();
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(
+  const [selectedAnswers, setSelectedAnswers] = useState<(number[] | null)[]>(
     new Array(quiz.questions.length).fill(null)
   );
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -25,12 +25,25 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
 
   const currentQuestion = quiz.questions[currentQuestionIndex];
   const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1;
-  const isAnswered = selectedAnswers[currentQuestionIndex] !== null;
+  const isAnswered =
+    Array.isArray(selectedAnswers[currentQuestionIndex]) &&
+    selectedAnswers[currentQuestionIndex]!.length > 0;
 
   const handleSelectAnswer = (optionIndex: number) => {
-    const newAnswers = [...selectedAnswers];
-    newAnswers[currentQuestionIndex] = optionIndex;
-    setSelectedAnswers(newAnswers);
+    setSelectedAnswers((currentAnswers) => {
+      const nextAnswers = [...currentAnswers];
+      const currentSelections = nextAnswers[currentQuestionIndex] ?? [];
+      const hasSelectedOption = currentSelections.includes(optionIndex);
+
+      const updatedSelections = hasSelectedOption
+        ? currentSelections.filter((answer) => answer !== optionIndex)
+        : [...currentSelections, optionIndex];
+
+      nextAnswers[currentQuestionIndex] =
+        updatedSelections.length > 0 ? updatedSelections : null;
+
+      return nextAnswers;
+    });
   };
 
   const handleNext = () => {
@@ -68,7 +81,7 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
         },
         body: JSON.stringify({
           quizId: quiz._id,
-          answers: selectedAnswers.map((answer) => answer ?? -1),
+          answers: selectedAnswers,
         }),
       });
 
@@ -133,7 +146,8 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
       {/* Dots overview */}
       <div className="mb-6 flex items-center justify-center gap-2">
         {quiz.questions.map((_, idx) => {
-          const visited = selectedAnswers[idx] !== null;
+          const visited =
+            Array.isArray(selectedAnswers[idx]) && selectedAnswers[idx]!.length > 0;
           const isCurrent = idx === currentQuestionIndex;
           return (
             <button
@@ -171,13 +185,16 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
         ) : null}
 
         {/* Options */}
+        <p className="mt-4 text-sm text-slate-500">
+          Select one or more answers before continuing.
+        </p>
         <div className="mt-6 space-y-3">
           {currentQuestion.options.map((option, index) => (
             <button
               key={index}
               onClick={() => handleSelectAnswer(index)}
               className={`w-full rounded-lg border-2 p-4 text-left transition ${
-                selectedAnswers[currentQuestionIndex] === index
+                selectedAnswers[currentQuestionIndex]?.includes(index)
                   ? "border-indigo-600 bg-indigo-50"
                   : "border-slate-200 bg-white hover:border-slate-300"
               }`}
@@ -185,12 +202,12 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
               <div className="flex items-center gap-3">
                 <div
                   className={`flex size-6 items-center justify-center rounded-full border-2 font-semibold ${
-                    selectedAnswers[currentQuestionIndex] === index
+                    selectedAnswers[currentQuestionIndex]?.includes(index)
                       ? "border-indigo-600 bg-indigo-600 text-white"
                       : "border-slate-300 text-slate-600"
                   }`}
                 >
-                  {String.fromCharCode(65 + index)}
+                  {selectedAnswers[currentQuestionIndex]?.includes(index) ? "✓" : String.fromCharCode(65 + index)}
                 </div>
                 <span className="font-medium text-slate-950">{option}</span>
               </div>
@@ -214,7 +231,7 @@ export function QuizPlayer({ quiz }: QuizPlayerProps) {
         {isLastQuestion ? (
           <button
             onClick={handleSubmit}
-            disabled={isSubmitting || selectedAnswers.some((a) => a === null)}
+            disabled={isSubmitting || selectedAnswers.some((answer) => !Array.isArray(answer) || answer.length === 0)}
             className="inline-flex items-center justify-center gap-2 rounded-md bg-indigo-600 px-6 py-2 font-semibold text-white transition hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {isSubmitting ? (

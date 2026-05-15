@@ -13,7 +13,7 @@ const attemptSchema = new Schema({
     index: true
   },
   answers: {
-    type: [Number],
+    type: [Schema.Types.Mixed],
     required: true,
     default: []
   },

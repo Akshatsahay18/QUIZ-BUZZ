@@ -66,8 +66,12 @@ const getQuestionErrors = (
       errors.options = optionErrors;
     }
 
-    if (!question.correctOptionId) {
-      errors.correctOption = "Select the correct answer.";
+    if (question.correctOptionIds.length < 1) {
+      errors.correctOption = "Select at least one correct answer.";
+    }
+
+    if (question.correctOptionIds.length > 4) {
+      errors.correctOption = "You can select at most four correct answers.";
     }
 
     if (question.isUploading) {
@@ -265,9 +269,13 @@ export default function CreateQuizPage() {
           question: question.question.trim(),
           image: question.image,
           options: question.options.map((option) => option.text.trim()),
-          correctAnswer: question.options.findIndex(
-            (option) => option.id === question.correctOptionId
-          ),
+          correctAnswers: question.options.reduce<number[]>((acc, option, index) => {
+            if (question.correctOptionIds.includes(option.id)) {
+              acc.push(index);
+            }
+
+            return acc;
+          }, []),
         })),
       };
 
@@ -512,8 +520,15 @@ export default function CreateQuizPage() {
 
             <div className="mt-6 space-y-4">
               {questions.map((question, index) => {
-                const correctOptionIndex = question.options.findIndex(
-                  (option) => option.id === question.correctOptionId
+                const correctOptionIndexes = question.options.reduce<number[]>(
+                  (acc, option, optionIndex) => {
+                    if (question.correctOptionIds.includes(option.id)) {
+                      acc.push(optionIndex);
+                    }
+
+                    return acc;
+                  },
+                  []
                 );
 
                 return (
@@ -528,9 +543,11 @@ export default function CreateQuizPage() {
                           {question.question || "Missing question text"}
                         </p>
                         <p className="mt-2 text-sm text-slate-600">
-                          Correct answer:{" "}
-                          {correctOptionIndex >= 0
-                            ? `Option ${correctOptionIndex + 1}`
+                          Correct answers:{" "}
+                          {correctOptionIndexes.length > 0
+                            ? correctOptionIndexes
+                                .map((optionIndex) => `Option ${optionIndex + 1}`)
+                                .join(", ")
                             : "Not selected"}
                         </p>
                       </div>

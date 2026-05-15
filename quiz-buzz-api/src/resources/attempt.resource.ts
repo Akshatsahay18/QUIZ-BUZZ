@@ -64,11 +64,13 @@ const calculateAttemptScore = async (ctx: ResourceHookContext) => {
 
   const answers = ctx.data.answers;
   if (!Array.isArray(answers)) {
-    throw new Error("answers must be an array of answer indexes (use -1 for skipped answers).");
+    throw new Error(
+      "answers must be an array where each item is either null or an array of answer indexes."
+    );
   }
 
   const quiz = await QuizModel.findById(quizId)
-    .select("+questions.correctAnswer")
+    .select("+questions.correctAnswers")
     .lean();
 
   if (!quiz) {
@@ -79,31 +81,69 @@ const calculateAttemptScore = async (ctx: ResourceHookContext) => {
     throw new Error("answers length must match the quiz question count.");
   }
 
-  // Validate entries: allow integers or -1 (skipped)
   for (let i = 0; i < answers.length; i++) {
     const a = answers[i];
-    if (!Number.isInteger(a) || a < -1 || a > 3) {
+
+    if (a === null) {
+      continue;
+    }
+
+    if (
+      !Array.isArray(a) ||
+      a.length < 1 ||
+      a.length > 4 ||
+      new Set(a).size !== a.length ||
+      a.some(
+        (answer) =>
+          !Number.isInteger(answer) || answer < 0 || answer > 3
+      )
+    ) {
       throw new Error(
-        `answers[${i}] is invalid. Use 0-3 for choices or -1 for skipped.`
+        `answers[${i}] is invalid. Use null for skipped or 1 to 4 unique choices from 0 to 3.`
       );
     }
   }
 
-  const correctAnswers: number[] = [];
+  const normalizeCorrectAnswers = (
+    question: { correctAnswers?: unknown }
+  ): number[] => {
+    const correctAnswers = question.correctAnswers;
+
+    if (Array.isArray(correctAnswers)) {
+      return correctAnswers.filter((answer): answer is number =>
+        Number.isInteger(answer)
+      );
+    }
+
+    return [];
+  };
+
+  const setsMatch = (left: number[], right: number[]) => {
+    if (left.length !== right.length) {
+      return false;
+    }
+
+    const sortedLeft = [...left].sort((a, b) => a - b);
+    const sortedRight = [...right].sort((a, b) => a - b);
+
+    return sortedLeft.every((value, index) => value === sortedRight[index]);
+  };
+
+  const correctAnswers = quiz.questions.map((question) =>
+    normalizeCorrectAnswers(question)
+  );
 
   const score = quiz.questions.reduce((total, question, index) => {
     const ans = answers[index];
-    if (ans === question.correctAnswer) {
-      correctAnswers.push(index);
+
+    if (Array.isArray(ans) && setsMatch(ans, correctAnswers[index] ?? [])) {
       return total + 1;
     }
+
     return total;
   }, 0);
 
   const total = quiz.questions.length;
-
-  // Prepare response answers array: convert stored -1 to null for clarity
-  const responseAnswers = answers.map((a) => (a === -1 ? null : a));
 
   return {
     ...ctx.data,
@@ -112,7 +152,7 @@ const calculateAttemptScore = async (ctx: ResourceHookContext) => {
     score,
     total,
     correctAnswers,
-    answers: responseAnswers
+    answers
   };
 };
 
@@ -158,14 +198,15 @@ export default defineResource<Attempt>({
       },
       correctAnswers: {
         type: "array",
-        items: { type: "number" },
+        items: { type: "array", items: { type: "number" } },
         systemManaged: true,
-        description: "Indices of correctly answered questions."
+        description: "Correct answer indexes for each quiz question."
       },
       answers: {
         type: "array",
-        items: { type: ["number", "null"] },
-        description: "Array of user answers; null indicates skipped."
+        items: { type: ["array", "null"] },
+        description:
+          "Array of user answers; each item is null or an array of selected option indexes."
       }
     },
     filterableFields: ["quizId", "userId", "score"],

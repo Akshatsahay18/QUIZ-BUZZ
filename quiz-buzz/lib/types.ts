@@ -7,14 +7,14 @@ export interface Question {
   question: string;
   image?: string;
   options: string[];
-  correctAnswer?: number;
+  correctAnswers?: number[];
 }
 
 export interface QuizQuestion {
   question: string;
   image?: string;
   options: string[];
-  correctAnswer: number;
+  correctAnswers: number[];
 }
 
 export interface Quiz {
@@ -61,10 +61,10 @@ export interface Attempt {
   _id: string;
   userId: string;
   quizId: string;
-  answers: (number | null)[];
+  answers: (number[] | null)[];
   score: number;
   total?: number;
-  correctAnswers?: number[];
+  correctAnswers?: number[][];
   completedAt: string;
 }
 
@@ -74,7 +74,7 @@ export interface LeaderboardEntry extends Attempt {
 
 export interface SubmitAttemptPayload {
   quizId: string;
-  answers: number[];
+  answers: (number[] | null)[];
   score: number;
 }
 

@@ -8,7 +8,7 @@ export type BuilderQuestion = {
   question: string;
   image?: string;
   options: BuilderOption[];
-  correctOptionId: string | null;
+  correctOptionIds: string[];
   isUploading?: boolean;
 };
 
@@ -37,6 +37,6 @@ export const createBuilderQuestion = (
     id: createId("o"),
     text: "",
   })),
-  correctOptionId: null,
+  correctOptionIds: [],
   isUploading: false,
 });

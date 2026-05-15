@@ -1,7 +1,6 @@
 "use client";
 
-import { ArrowDown, ArrowUp, CheckCircle2, Trash2 } from "lucide-react";
-import { useId } from "react";
+import { ArrowDown, ArrowUp, CheckSquare2, Square, Trash2 } from "lucide-react";
 import { QuestionImageUpload } from "@/components/questions/QuestionImageUpload";
 import type {
   BuilderQuestion,
@@ -33,8 +32,6 @@ export default function QuestionCard({
   disableMoveDown = false,
   disableRemove = false,
 }: QuestionCardProps) {
-  const radioName = useId();
-
   const updateOptionText = (optionId: string, text: string) => {
     onChange({
       ...question,
@@ -58,6 +55,17 @@ export default function QuestionCard({
     });
   };
 
+  const toggleCorrectOption = (optionId: string) => {
+    const isSelected = question.correctOptionIds.includes(optionId);
+
+    onChange({
+      ...question,
+      correctOptionIds: isSelected
+        ? question.correctOptionIds.filter((id) => id !== optionId)
+        : [...question.correctOptionIds, optionId],
+    });
+  };
+
   return (
     <article className="rounded-2xl border border-slate-200 bg-slate-50 p-5 shadow-sm">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
@@ -71,8 +79,8 @@ export default function QuestionCard({
                 Question {index + 1}
               </h3>
               <p className="text-sm text-slate-500">
-                Add a prompt, optional image, four choices, and the correct
-                answer.
+                Add a prompt, optional image, four choices, and select one or
+                more correct answers.
               </p>
             </div>
           </div>
@@ -150,25 +158,25 @@ export default function QuestionCard({
           {question.options.map((option, optionIndex) => (
             <label key={option.id} className="grid gap-2">
               <div className="flex items-center gap-2">
-                <input
-                  type="radio"
-                  name={radioName}
-                  aria-label={`Mark option ${optionIndex + 1} correct for question ${index + 1}`}
-                  checked={question.correctOptionId === option.id}
-                  onChange={() =>
-                    onChange({
-                      ...question,
-                      correctOptionId: option.id,
-                    })
-                  }
-                  className="size-4 border-slate-300 text-indigo-600 focus:ring-indigo-500"
-                />
+                <button
+                  type="button"
+                  aria-label={`Toggle option ${optionIndex + 1} as correct for question ${index + 1}`}
+                  aria-pressed={question.correctOptionIds.includes(option.id)}
+                  onClick={() => toggleCorrectOption(option.id)}
+                  className="rounded-sm text-indigo-600"
+                >
+                  {question.correctOptionIds.includes(option.id) ? (
+                    <CheckSquare2 className="size-4" aria-hidden="true" />
+                  ) : (
+                    <Square className="size-4" aria-hidden="true" />
+                  )}
+                </button>
                 <span className="text-sm font-medium text-slate-700">
                   Option {optionIndex + 1}
                 </span>
-                {question.correctOptionId === option.id ? (
+                {question.correctOptionIds.includes(option.id) ? (
                   <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-2 py-0.5 text-xs font-semibold text-emerald-700">
-                    <CheckCircle2 className="size-3" aria-hidden="true" />
+                    <CheckSquare2 className="size-3" aria-hidden="true" />
                     Correct
                   </span>
                 ) : null}
@@ -198,6 +206,9 @@ export default function QuestionCard({
         {errors?.correctOption ? (
           <p className="text-xs text-rose-600">{errors.correctOption}</p>
         ) : null}
+        <p className="text-xs text-slate-500">
+          Select between 1 and 4 correct answers.
+        </p>
       </div>
     </article>
   );

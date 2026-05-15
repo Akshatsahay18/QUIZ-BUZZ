@@ -20,12 +20,22 @@ const questionSchema = new Schema(
         message: "A question must include exactly 4 options."
       }
     },
-    correctAnswer: {
-      type: Number,
+    correctAnswers: {
+      type: [Number],
       required: true,
       select: false,
-      min: 0,
-      max: 3
+      validate: {
+        validator: (answers: number[]) =>
+          Array.isArray(answers) &&
+          answers.length >= 1 &&
+          answers.length <= 4 &&
+          new Set(answers).size === answers.length &&
+          answers.every(
+            (answer) => Number.isInteger(answer) && answer >= 0 && answer <= 3
+          ),
+        message:
+          "A question must include 1 to 4 unique correct answer indexes from 0 to 3."
+      }
     }
   },
   { _id: false }
